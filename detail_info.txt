@@ -1,0 +1,41 @@
+python <<EOF
+import os,sys
+import psutil
+
+metrics={}
+cpu=psutil.cpu_times()
+metrics["cpu_usage"]=psutil.cpu_percent(interval=1)
+metrics["cpu_system"]=cpu.system
+mem = psutil.virtual_memory()
+metrics["mem_free"]=mem.free/1024/1024
+#metrics["mem_used"]=mem.used
+#metrics["mem_available"]=mem.available
+metrics["mem_usage"]=mem.percent
+swap=psutil.swap_memory()
+metrics["swap_usage"]=swap.percent
+#disk=psutil.disk_io_counters(perdisk=True)
+#for prefix in disk.key():
+#    metrics[prefix+"_"+"read_count"]=disk[prefix].read_count
+#    metrics[prefix+"_"+write_count"]=disk[prefix].write_count
+#    metrics[prefix+"_"+"read_bytes"]=disk[prefix].read_bytes
+#    metrics[prefix+"_"+write_bytes"]=disk[prefix].write_bytes
+disk=psutil.disk_usage('/')
+metrics["disk_usage"]=disk.percent
+os.system('nvidia-smi -q -d Memory |grep -A4 GPU|grep Free >result1.txt')
+gpu=open("/home/sxx/result1.txt",'r')
+lines=gpu.read()
+sp=lines.split(":")
+sp[0]=sp[0].strip()
+sp[1]=sp[1].strip("\n")
+sp[1]=sp[1].strip("MiB")
+sp[1]=sp[1].strip()
+metrics[sp[0]]=float(sp[1])
+#metrics["gpu_mem_use"]=gpu.read()
+gpu.close()
+
+f = open("/home/sxx/result.txt",'wb')
+print >>f,metrics
+f.close()
+
+
+EOF
