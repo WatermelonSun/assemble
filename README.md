@@ -1,2 +1,2 @@
 # assemble
-在服务器中，根据系统资源使用情况，选择合适的工作站执行带参数的文件，并将执行结果返回服务器。
+In server，choose the fittest workstation to execute the file with paramente according to status of system resource，while return the result to server.
